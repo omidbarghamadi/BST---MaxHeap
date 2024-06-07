@@ -1,342 +1,174 @@
-﻿class Node
+﻿using System;
+
+class Person
 {
-    public int data;
-    public Node Rchild;
-    public Node Lchild;
-    public Node parent;
+    public int age;
+    public char skill;
 
-    public Node(int data)
+    public Person(int age, char skill)
     {
-        this.data = data;
-        Rchild = null;
-        Lchild = null;
-        parent = null;
-    }
-
-    public Node()
-    {
-        this.data = 0;
-        Rchild = null;
-        Lchild = null;
-        parent = null;
+        this.age = age;
+        this.skill = skill;
     }
 }
-
-class BST
-{
-    public Node root;
-
-    public BST(Node root)   //Contructor
-    {
-        this.root = root;
-    }
-    public BST()    //Contructor
-    {
-        root = null;
-    }           
-
-    public Node Search(int key)     //Search Key in the Tree    T(n) = O(h)
-    {
-        Node r = root;
-        while (r != null && key != r.data)
-        {
-            if (key < r.data)
-                r = r.Lchild;
-            else
-                r = r.Rchild;
-        }
-        return r;
-    }
-
-    public Node Tree_Minimum(Node x)    //Find Minimum data in the Tree    T(n) = O(h)
-    {
-        while(x.Lchild!=null)
-            x = x.Lchild;
-        return x;
-    }
-    public Node Tree_Maximum(Node x)    //Find Minimum data in the Tree    T(n) = O(h)
-    {
-        while (x.Rchild != null)
-            x = x.Rchild;
-        return x;
-    }
-
-    public void Insert_Key(int data)   //Insert Data in the Tree     T(n) = O(h)
-    {
-        Node z = new Node(data);
-        Node x = root;
-        Node y = null;
-
-        while (x != null)
-        {
-            y = x;
-            if (z.data < x.data)
-                x = x.Lchild;
-            else
-                x = x.Rchild;
-        }
-        z.parent = y;
-
-        if (y == null)
-            root = z;
-        else if (z.data < y.data)
-            y.Lchild = z;
-        else
-            y.Rchild = z;
-    }   
-    public void Insert_Node(Node NewNode)   //Insert Node in the Tree
-    {
-        if (NewNode == null)
-            return;
-        Insert_Key(NewNode.data);
-        Insert_Node(NewNode.Lchild);
-        Insert_Node(NewNode.Rchild);
-    }
-
-    public Node Next_Node(Node x)       //Find the Next Node in the Tree  T(n) = O(h)
-    {
-        if (x.Rchild != null)       //If it has a right sub-tree
-            return Tree_Minimum(x.Rchild);
-        Node y = x.parent;  
-        while (y != null && x == y.Rchild)
-        {
-            x = y;
-            y = y.parent;
-        }
-        return y;
-    }
-    public Node Next_Node(int key)
-    {
-        return Next_Node(Search(key));
-    }
-
-    public Node Before_Node(Node x)     //Find the Previous Node in the Tree  T(n) = O(h)
-    {
-        if (x.Lchild != null)
-            return Tree_Maximum(x.Lchild);
-        Node y = x.parent;
-        while (y != null && x == y.Lchild)
-        {
-            x = y;
-            y = y.parent;
-        }
-        return y;
-    }
-    public Node Before_Node(int key)
-    {
-        return Before_Node(Search(key));
-    }
-
-    public void Delete(int key) //Find the Key then Return Node
-    {
-        Delete(Search(key));
-    }
-    private void Delete(Node z) //Delete Node And 
-    {
-        Node y,x;
-        if (z.Lchild == null || z.Rchild == null)   //If the Node Has at Most One Child
-            y = z;
-        else        //If the node has two children
-            y = Next_Node(z);
-
-        if(y.Lchild != null)
-            x = y.Lchild;
-        else
-            x = y.Rchild;
-
-        if (x != null)
-            x.parent = y.parent;
-
-        if (y.parent == null)
-            root = x;
-        else if (y == y.parent.Lchild)
-            y.parent.Lchild = x;
-        else
-            y.parent.Rchild = x;
-
-        if (y != z)
-            z.data = y.data;
-    }
-
-    public static BST Merge(BST b1, BST b2) //merge Two Bst   O(n) = O(h1) + O(h2)
-    {
-        BST MergeBST = new BST();
-        MergeBST.Insert_Node(b1.root);
-        MergeBST.Insert_Node(b2.root);
-        return MergeBST;
-    }
-
-    
-    public Maxheap Kth_Biggest(int k)
-    {
-        Node max = Tree_Maximum(root);
-        Maxheap maxheap = new Maxheap(k);
-
-        while (k>0)
-        {
-            maxheap.Insert_to_Heap(max.data);
-            max = Before_Node(max);
-            k--;
-        }
-        return maxheap;
-    }
-    public void Print()
-    {
-        if (root == null)
-            Console.Write("BST is empty!");
-        else
-            Print(root);
-    }
-    public void Print(Node x)   //Print Inorder Keys    T(n) = O(n)
-    {
-        if (x == null)
-            return;
-
-        Print(x.Lchild);
-        Console.Write(x.data + " ");
-        Print(x.Rchild);
-    }
-}
-
 class Maxheap
 {
-    private int[] heap;
-    private int size;
-    public Maxheap(int n)
+    public Person[] heap;
+    public int size;
+
+    public Maxheap(int len)
     {
-        heap = new int[n];
-        size = 0;
+        heap = new Person[len];
+        this.size = -1; 
     }
-    public int LEft(int index)
+    public Maxheap()
     {
-        return heap[index * 2];
-    }
-    private int Parent(int index)
-    {
-        return (index - 1) / 2;
-    }
-    public void Max_Heapify(int index)
-    {
-        while (index > 0 && heap[index] > heap[Parent(index)])
-        {
-            Swap(index, Parent(index));
-            index = Parent(index);
-        }
-    }
-    private void Swap(int index1, int index2)
-    {
-        int temp = heap[index1];
-        heap[index1] = heap[index2];
-        heap[index2] = temp;
-    }
-    public void Insert_to_Heap(int data)
-    {
-        heap[size++] = data;
-        Max_Heapify(size - 1);
-    }
-    private void HeapifyUp(int index)
-    {
-        while (index > 0 && heap[index] > heap[Parent(index)])
-        {
-            Swap(index, Parent(index));
-            index = Parent(index);
-        }
+        heap = new Person[100];
+        this.size = -1;
     }
 
-    public string ToString()
+    public int Left(int i)
     {
-        string s = "[";
-        foreach (int n in heap)
+        return i * 2 + 1;
+    }
+    public int Right(int i)
+    {
+        return i * 2 + 2;
+    }
+    public int Parent(int i)
+    {
+        return (i - 1) / 2;
+    }
+
+    void MaxHeapfy(int i)
+    {
+        int largest = i;
+
+        int l = Left(i);
+        int r = Right(i);
+
+        if (l <= size && heap[l].skill > heap[largest].skill)
         {
-            s += n.ToString() + ", ";
+            largest = l;
         }
-        return s + "]";
+        if (r <= size && heap[r].skill > heap[largest].skill)
+        {
+            largest = r;
+        }
+        if (i != largest)
+        {
+            swap(i, largest);
+            MaxHeapfy(largest);
+        }
+    }
+    public Person Heap_Extract_Max()
+    {
+        if (size == -1)
+            return null;
+        Person final = heap[0];
+        heap[0] = heap[size];
+        size = size - 1;
+        MaxHeapfy(0);
+        return final;
+    }
+    void ExchangeUP(int i)
+    {
+        while (i > 0 && heap[Parent(i)].skill < heap[i].skill)
+        {
+            swap(Parent(i), i);
+            i = Parent(i);
+        }
+    }
+    void swap(int i, int j)
+    {
+        Person temp = heap[i];
+        heap[i] = heap[j];
+        heap[j] = temp;
+    }
+    public void insert_person(int age, char skill)
+    {
+        Person NewPer = new Person(age, skill);
+        insert_person(NewPer);
+
+    }
+    public void insert_person(Person p)
+    {
+        size++;
+        heap[size] = p;
+        ExchangeUP(size);
+
+    }
+    public void Heap_Increase_SKil(int index, char p)
+    {
+        if (index > size || index < 0)
+            Console.WriteLine("Index out of Range");
+        
+        heap[index].skill = p;
+        ExchangeUP(index);
+    }
+
+    public void print()
+    {
+        Console.Write("{");
+        for (int i = 0; i <= size; i++)
+        {
+            Console.Write("Preson {0} -> [age: {1}, skill: {2}], ", i + 1, heap[i].age, heap[i].skill);
+        }
+        Console.WriteLine("}");
     }
 }
-namespace AlgorithmDesignProj
+namespace Algoritm
 {
     class program
     {
         static void Main(string[] args)
         {
-            BST mainbst = new BST();
+            Maxheap maxheap = new Maxheap();
             do
             {
                 Console.WriteLine("\t\t***Program Commands***");
-                Console.WriteLine("1: Insert Node");
-                Console.WriteLine("2: Next Node");
-                Console.WriteLine("3: Before Node");
-                Console.WriteLine("4: Merge Two BST");
-                Console.WriteLine("5: Kth Largest Put Into MaxHeap");
-                Console.WriteLine("6: Print BST");
-                Console.WriteLine("7: Maximum Tree");
-                Console.WriteLine("8: Minimum Tree");
-                Console.WriteLine("9: Empty Tree");
-                Console.WriteLine("10: Quit\n");
+                Console.WriteLine("1: Insert Person");
+                Console.WriteLine("2: Update Person Skill");
+                Console.WriteLine("3: Extrackt Best Person");
+                Console.WriteLine("4: Print Persons");
+                Console.WriteLine("5: Quit\n");
 
                 string Phrase = Console.ReadLine();
 
                 if (Phrase == "1")
-                {   
-                    Console.Write("Enter number: ");
-                    mainbst.Insert_Key(Convert.ToInt32(Console.ReadLine()));
+                {
+                    Console.Write("Enter age: ");
+                    int age = Convert.ToInt32(Console.ReadLine());
+                    Console.Write("Enter Skill(A..F): ");
+                    char skill =Convert.ToChar( Console.ReadLine().ToUpper());
+
+                    maxheap.insert_person(age, skill);
+
                     Console.WriteLine("Inserted");
                 }
                 else if (Phrase == "2")
                 {
-                    Console.Write("Enter number: ");
-                    int key = mainbst.Next_Node(Convert.ToInt32(Console.ReadLine())).data;
-                    Console.WriteLine("Next Node: {0}",key);
+                    Console.Write("Enter Index(1..{0}): ",maxheap.size+1);
+                    int i = Convert.ToInt32(Console.ReadLine())-1;
+                    Console.WriteLine("Skill Now: " + maxheap.heap[i].skill);
+                    Console.Write("Enter higher Skill(A..F): ");
+                    char s = Convert.ToChar(Console.ReadLine().ToUpper());
+                    maxheap.Heap_Increase_SKil(i, s);
+                    //Console.WriteLine("Next Node: {0}", key);
                 }
                 else if (Phrase == "3")
                 {
-                    Console.Write("Enter number: ");
-                    int key = mainbst.Before_Node(Convert.ToInt32(Console.ReadLine())).data;
-                    Console.WriteLine("Before Node: {0}", key);
+                    Console.Write("Best Person: ");
+                    Person p = maxheap.Heap_Extract_Max();
+                    Console.Write("[age: {0}, skill: {1}]\n, ",p.age,p.skill);
                 }
                 else if (Phrase == "4")
                 {
-                    Console.WriteLine("Enter Lentgh BST2:");
-                    int len = Convert.ToInt32(Console.ReadLine());
-
-                    BST bst2 = new BST();
-
-                    for (int i = 0; i < len; i++)
-                    {
-                        Console.Write("Enter number BST: ");
-                        bst2.Insert_Key(Convert.ToInt32(Console.ReadLine()));
-                    }
-                    Console.Write("BST Merged: <");
-                    BST.Merge(mainbst, bst2).Print();
-                    Console.Write(">\n");
-
+                    Console.WriteLine("Print Persons:");
+                    maxheap.print();
+                    
                 }
                 else if (Phrase == "5")
-                {
-                    Console.Write("Enter K: ");
-                    Maxheap MH = mainbst.Kth_Biggest(Convert.ToInt32(Console.ReadLine()));
-                    Console.WriteLine("Max Heap:" + MH.ToString());
-                }
-                else if (Phrase == "6")
-                {
-                    Console.Write("BST: <");
-                    mainbst.Print();
-                    Console.Write(">\n");
-                }
-                else if (Phrase == "7")
-                {
-                    Console.WriteLine("Maximum BST: {0}",mainbst.Tree_Maximum(mainbst.root).data);
-                }
-                else if (Phrase == "8")
-                {
-                    Console.WriteLine("Minimum BST: {0}", mainbst.Tree_Minimum(mainbst.root).data);
-                }
-                else if (Phrase == "9")
-                {
-                    mainbst.root = null;
-                    Console.WriteLine("Empty Tree!..");
-                }
-                else if (Phrase == "10")
                 {
                     Console.Write("The End!..");
                     break;
