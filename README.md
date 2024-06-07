@@ -1,2 +1,2 @@
-# Binary-Search-Tree-BST
+# BST - MaxHeap
 In this project, you can create a BST tree, add nodes, delete them, merge BSTs and...
